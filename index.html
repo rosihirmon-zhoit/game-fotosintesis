@@ -30,6 +30,7 @@
       line-height: 1.5;
     }
 
+    /* Sticky Top HUD */
     .hud-bar {
       position: sticky;
       top: 0;
@@ -41,7 +42,7 @@
       border: 3px solid var(--green-main);
       border-top: none;
       border-radius: 0 0 18px 18px;
-      padding: 10px 18px;
+      padding: 10px 16px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -53,7 +54,7 @@
     .hud-stats {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -62,14 +63,14 @@
       border: 2px solid var(--gold-main);
       color: #92400e;
       font-weight: bold;
-      padding: 5px 14px;
+      padding: 5px 12px;
       border-radius: 999px;
-      font-size: 15px;
+      font-size: 14.5px;
     }
 
     .progress-wrap {
-      width: 140px;
-      height: 14px;
+      width: 110px;
+      height: 13px;
       background: #e5e7eb;
       border-radius: 999px;
       overflow: hidden;
@@ -85,7 +86,7 @@
 
     .hud-actions {
       display: flex;
-      gap: 8px;
+      gap: 7px;
       flex-wrap: wrap;
     }
 
@@ -94,9 +95,9 @@
       font-weight: bold;
       border: none;
       border-radius: 10px;
-      padding: 8px 14px;
+      padding: 8px 12px;
       cursor: pointer;
-      font-size: 13.5px;
+      font-size: 13px;
       transition: transform 0.1s ease, opacity 0.2s;
     }
 
@@ -105,8 +106,10 @@
     .btn-green { background: var(--green-main); color: white; }
     .btn-gold { background: var(--gold-main); color: white; }
     .btn-purple { background: var(--purple-main); color: white; }
+    .btn-dark { background: #1f2937; color: white; }
     .btn-gray { background: #e5e7eb; color: #374151; }
 
+    /* Main Container */
     .game-container {
       max-width: 860px;
       margin: 0 auto;
@@ -176,6 +179,7 @@
       font-weight: bold;
     }
 
+    /* Level 1 MCQ */
     .mcq-card {
       background: #f8fafc;
       border: 2px solid #cbd5e1;
@@ -256,6 +260,7 @@
       margin: 14px 0;
     }
 
+    /* Level 2 Fill in the blanks */
     .word-bank {
       background: var(--gold-light);
       border: 3px dashed var(--gold-main);
@@ -325,6 +330,7 @@
       color: #7f1d1d;
     }
 
+    /* Level 3 Essay */
     .essay-card {
       background: #faf5ff;
       border: 2px solid #d8b4fe;
@@ -370,6 +376,7 @@
       padding: 6px 12px;
     }
 
+    /* Victory Card */
     .victory-card {
       display: none;
       margin-top: 24px;
@@ -386,8 +393,64 @@
       font-size: 24px;
     }
 
+    /* Full Answer Key Section (PG, Isian, Essay) */
+    .full-key-section {
+      display: none;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 3px dashed #6b7280;
+      page-break-before: always;
+    }
+
+    .full-key-section.open {
+      display: block;
+    }
+
+    .key-banner {
+      background: #1f2937;
+      color: #ffffff;
+      border-radius: 14px;
+      padding: 14px 18px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .key-banner h2 { margin: 0; font-size: 20px; }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .key-box {
+      background: #f9fafb;
+      border: 2px solid #d1d5db;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 13.5px;
+    }
+
+    .key-box h3 {
+      margin: 0 0 8px 0;
+      color: var(--green-dark);
+      font-size: 15px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 4px;
+    }
+
+    .key-box ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .key-box li {
+      margin-bottom: 5px;
+    }
+
     @media (max-width: 620px) {
-      .opt-grid { grid-template-columns: 1fr; }
+      .opt-grid, .key-grid { grid-template-columns: 1fr; }
       .game-container { padding: 16px; }
     }
 
@@ -400,17 +463,19 @@
 </head>
 <body>
 
+  <!-- Top Sticky HUD -->
   <div class="hud-bar">
     <div class="hud-stats">
       <div class="xp-pill">⭐ XP: <span id="xpScore">0</span> / 300</div>
       <div class="progress-wrap" title="Quest Progress">
         <div class="progress-fill" id="progressBar"></div>
       </div>
-      <span id="rankLabel" style="font-size:13px; font-weight:bold; color:#1b5e20;">🌱 Seedling Apprentice</span>
+      <span id="rankLabel" style="font-size:12.5px; font-weight:bold; color:#1b5e20;">🌱 Seedling Apprentice</span>
     </div>
     <div class="hud-actions">
+      <button class="btn-dark" onclick="toggleFullKey()">🔑 Answer Key (PG–Essay)</button>
       <button class="btn-gray" onclick="resetGame()">🔄 Restart</button>
-      <button class="btn-green" onclick="window.print()">🖨️ Save PDF / Print</button>
+      <button class="btn-green" onclick="window.print()">🖨️ Save PDF</button>
     </div>
   </div>
 
@@ -430,6 +495,7 @@
       </div>
     </div>
 
+    <!-- LEVEL 1 -->
     <div class="level-header level-1">
       <h2>🧭 LEVEL 1: THE LEAF LABYRINTH (20 Questions)</h2>
       <span class="badge">5 XP Each &bull; Max 100 XP</span>
@@ -437,6 +503,7 @@
     <p style="font-size:14px; font-style:italic; margin-top:0;">Click the correct answer for each question to earn 5 XP!</p>
     <div id="level1Container"></div>
 
+    <!-- LEVEL 2 -->
     <div class="level-header level-2">
       <h2>🔐 LEVEL 2: SECRET CODE BREAKER (10 Questions)</h2>
       <span class="badge">10 XP Each &bull; Max 100 XP</span>
@@ -458,6 +525,7 @@
       </button>
     </div>
 
+    <!-- LEVEL 3 -->
     <div class="level-header level-3">
       <h2>🐉 LEVEL 3: FINAL BOSS BATTLE (5 Essays)</h2>
       <span class="badge">20 XP Each &bull; Max 100 XP</span>
@@ -474,10 +542,42 @@
       </button>
     </div>
 
+    <!-- VICTORY CERTIFICATE -->
     <div class="victory-card" id="victoryCard">
       <h2>🏆 QUEST COMPLETE! CONGRATULATIONS! 🏆</h2>
       <p id="victoryMessage" style="font-size:16px; font-weight:bold;"></p>
-      <p style="font-size:14px;">Click <strong>"🖨️ Save PDF / Print"</strong> at the top to save your Hero Certificate & Answers!</p>
+      <p style="font-size:14px;">Click <strong>"🖨️ Save PDF"</strong> at the top to save your Hero Certificate & Answers!</p>
+    </div>
+
+    <!-- Bottom Toggle Button for Complete Answer Key -->
+    <div class="no-print" style="text-align:center; margin-top:22px;">
+      <button class="btn-dark" onclick="toggleFullKey()" style="padding:10px 20px; font-size:14px;">
+        🔑 Show / Hide Full Answer Key (PG, Fill-in & Essay)
+      </button>
+    </div>
+
+    <!-- COMPLETE ANSWER KEY SECTION (PG + Isian + Essay) -->
+    <div id="fullAnswerKey" class="full-key-section">
+      <div class="key-banner">
+        <h2>🔑 FULL ANSWER KEY (PG, FILL IN THE BLANKS & ESSAY)</h2>
+      </div>
+
+      <div class="key-grid">
+        <div class="key-box">
+          <h3>Level 1: Multiple Choice / PG (1–20)</h3>
+          <ol id="keyList1"></ol>
+        </div>
+
+        <div class="key-box">
+          <h3>Level 2: Fill in the Blanks / Isian (1–10)</h3>
+          <ol id="keyList2"></ol>
+        </div>
+      </div>
+
+      <div class="key-box">
+        <h3>Level 3: Boss Battle Essay (1–5)</h3>
+        <ol id="keyList3"></ol>
+      </div>
     </div>
   </div>
 
@@ -634,169 +734,3 @@
           const inputs = document.querySelectorAll(".blank-input");
           if (inputs[activeBlankIndex]) {
             inputs[activeBlankIndex].value = word;
-            for (let i = 0; i < inputs.length; i++) {
-              const nextIdx = (activeBlankIndex + 1 + i) % inputs.length;
-              if (!inputs[nextIdx].value.trim()) {
-                setActiveBlank(nextIdx);
-                break;
-              }
-            }
-            refreshUsedPills();
-          }
-        };
-        pillsBox.appendChild(pill);
-      });
-
-      const container = document.getElementById("level2Container");
-      container.innerHTML = "";
-      blanksData.forEach((item, idx) => {
-        const card = document.createElement("div");
-        card.className = "blank-card";
-
-        const input = document.createElement("input");
-        input.type = "text";
-        input.className = "blank-input" + (idx === 0 ? " active-slot" : "");
-        input.placeholder = "type or click word";
-        input.dataset.index = idx;
-        input.onfocus = () => setActiveBlank(idx);
-        input.oninput = refreshUsedPills;
-
-        const hint = document.createElement("span");
-        hint.className = "l2-hint";
-        hint.style.marginLeft = "8px";
-        hint.style.fontWeight = "bold";
-        hint.style.fontSize = "13px";
-
-        card.appendChild(document.createTextNode(item.before));
-        card.appendChild(input);
-        card.appendChild(document.createTextNode(item.after));
-        card.appendChild(hint);
-        container.appendChild(card);
-      });
-    }
-
-    function setActiveBlank(idx) {
-      activeBlankIndex = idx;
-      document.querySelectorAll(".blank-input").forEach((inp, i) => {
-        inp.classList.toggle("active-slot", i === idx);
-      });
-    }
-
-    function refreshUsedPills() {
-      const vals = Array.from(document.querySelectorAll(".blank-input")).map(i => i.value.trim().toLowerCase());
-      document.querySelectorAll(".pill-btn").forEach(pill => {
-        pill.classList.toggle("used", vals.includes(pill.textContent.toLowerCase()));
-      });
-    }
-
-    function checkLevel2() {
-      if (l2Checked) return;
-      l2Checked = true;
-      const inputs = document.querySelectorAll(".blank-input");
-      const hints = document.querySelectorAll(".l2-hint");
-
-      inputs.forEach((inp, idx) => {
-        inp.disabled = true;
-        inp.classList.remove("active-slot");
-        completedChallenges++;
-        const userAns = inp.value.trim().toLowerCase();
-        const correctAns = blanksData[idx].ans.toLowerCase();
-
-        if (userAns === correctAns) {
-          inp.classList.add("correct");
-          hints[idx].style.color = "#15803d";
-          hints[idx].textContent = "✅ +10 XP!";
-          totalXP += 10;
-        } else {
-          inp.classList.add("wrong");
-          hints[idx].style.color = "#b91c1c";
-          hints[idx].textContent = `❌ Answer: ${blanksData[idx].ans}`;
-        }
-      });
-
-      document.getElementById("checkL2Btn").disabled = true;
-      document.getElementById("checkL2Btn").style.opacity = "0.6";
-      updateHUD();
-    }
-
-    function renderLevel3() {
-      const container = document.getElementById("level3Container");
-      container.innerHTML = "";
-      essayData.forEach((item, idx) => {
-        const card = document.createElement("div");
-        card.className = "essay-card";
-
-        card.innerHTML = `
-          <div class="essay-q">${item.q}</div>
-          <textarea class="essay-box" id="essay_${idx}" placeholder="Write your answer here..."></textarea>
-          <div class="sample-answer" id="sample_${idx}">
-            <strong>🔑 Sample Guide Answer:</strong> ${item.sample}<br/>
-            <button class="claim-btn no-print" id="claim_${idx}" onclick="claimEssayXP(${idx})">✅ My answer matches! Claim +20 XP</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function submitBossBattle() {
-      if (bossSubmitted) return;
-      for (let i = 0; i < essayData.length; i++) {
-        if (!document.getElementById(`essay_${i}`).value.trim()) {
-          alert(`Please write your answer for Boss Question #${i + 1} before submitting!`);
-          document.getElementById(`essay_${i}`).focus();
-          return;
-        }
-      }
-
-      bossSubmitted = true;
-      completedChallenges += essayData.length;
-      essayData.forEach((_, idx) => {
-        document.getElementById(`sample_${idx}`).style.display = "block";
-      });
-
-      document.getElementById("submitBossBtn").disabled = true;
-      document.getElementById("submitBossBtn").style.opacity = "0.6";
-      document.getElementById("victoryCard").style.display = "block";
-      updateHUD();
-      document.getElementById("victoryCard").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function claimEssayXP(idx) {
-      const btn = document.getElementById(`claim_${idx}`);
-      if (btn.disabled) return;
-      btn.disabled = true;
-      btn.textContent = "⭐ +20 XP Claimed!";
-      btn.style.background = "#15803d";
-      btn.style.opacity = "0.75";
-      totalXP += 20;
-      updateHUD();
-    }
-
-    function resetGame() {
-      if (!confirm("Restart the entire Photosynthesis Quest from 0 XP?")) return;
-      totalXP = 0;
-      completedChallenges = 0;
-      activeBlankIndex = 0;
-      l2Checked = false;
-      bossSubmitted = false;
-
-      document.getElementById("checkL2Btn").disabled = false;
-      document.getElementById("checkL2Btn").style.opacity = "1";
-      document.getElementById("submitBossBtn").disabled = false;
-      document.getElementById("submitBossBtn").style.opacity = "1";
-      document.getElementById("victoryCard").style.display = "none";
-
-      renderLevel1();
-      renderLevel2();
-      renderLevel3();
-      updateHUD();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    renderLevel1();
-    renderLevel2();
-    renderLevel3();
-    updateHUD();
-  </script>
-</body>
-</html>
