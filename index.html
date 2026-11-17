@@ -734,3 +734,205 @@
           const inputs = document.querySelectorAll(".blank-input");
           if (inputs[activeBlankIndex]) {
             inputs[activeBlankIndex].value = word;
+            for (let i = 0; i < inputs.length; i++) {
+              const nextIdx = (activeBlankIndex + 1 + i) % inputs.length;
+              if (!inputs[nextIdx].value.trim()) {
+                setActiveBlank(nextIdx);
+                break;
+              }
+            }
+            refreshUsedPills();
+          }
+        };
+        pillsBox.appendChild(pill);
+      });
+
+      const container = document.getElementById("level2Container");
+      container.innerHTML = "";
+      blanksData.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "blank-card";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "blank-input" + (idx === 0 ? " active-slot" : "");
+        input.placeholder = "type or click word";
+        input.dataset.index = idx;
+        input.onfocus = () => setActiveBlank(idx);
+        input.oninput = refreshUsedPills;
+
+        const hint = document.createElement("span");
+        hint.className = "l2-hint";
+        hint.style.marginLeft = "8px";
+        hint.style.fontWeight = "bold";
+        hint.style.fontSize = "13px";
+
+        card.appendChild(document.createTextNode(item.before));
+        card.appendChild(input);
+        card.appendChild(document.createTextNode(item.after));
+        card.appendChild(hint);
+        container.appendChild(card);
+      });
+    }
+
+    function setActiveBlank(idx) {
+      activeBlankIndex = idx;
+      document.querySelectorAll(".blank-input").forEach((inp, i) => {
+        inp.classList.toggle("active-slot", i === idx);
+      });
+    }
+
+    function refreshUsedPills() {
+      const vals = Array.from(document.querySelectorAll(".blank-input")).map(i => i.value.trim().toLowerCase());
+      document.querySelectorAll(".pill-btn").forEach(pill => {
+        pill.classList.toggle("used", vals.includes(pill.textContent.toLowerCase()));
+      });
+    }
+
+    function checkLevel2() {
+      if (l2Checked) return;
+      l2Checked = true;
+      const inputs = document.querySelectorAll(".blank-input");
+      const hints = document.querySelectorAll(".l2-hint");
+
+      inputs.forEach((inp, idx) => {
+        inp.disabled = true;
+        inp.classList.remove("active-slot");
+        completedChallenges++;
+        const userAns = inp.value.trim().toLowerCase();
+        const correctAns = blanksData[idx].ans.toLowerCase();
+
+        if (userAns === correctAns) {
+          inp.classList.add("correct");
+          hints[idx].style.color = "#15803d";
+          hints[idx].textContent = "✅ +10 XP!";
+          totalXP += 10;
+        } else {
+          inp.classList.add("wrong");
+          hints[idx].style.color = "#b91c1c";
+          hints[idx].textContent = `❌ Answer: ${blanksData[idx].ans}`;
+        }
+      });
+
+      document.getElementById("checkL2Btn").disabled = true;
+      document.getElementById("checkL2Btn").style.opacity = "0.6";
+      updateHUD();
+    }
+
+    function renderLevel3() {
+      const container = document.getElementById("level3Container");
+      container.innerHTML = "";
+      essayData.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "essay-card";
+
+        card.innerHTML = `
+          <div class="essay-q">${item.q}</div>
+          <textarea class="essay-box" id="essay_${idx}" placeholder="Write your answer here..."></textarea>
+          <div class="sample-answer" id="sample_${idx}">
+            <strong>🔑 Sample Guide Answer:</strong> ${item.sample}<br/>
+            <button class="claim-btn no-print" id="claim_${idx}" onclick="claimEssayXP(${idx})">✅ My answer matches! Claim +20 XP</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function submitBossBattle() {
+      if (bossSubmitted) return;
+      for (let i = 0; i < essayData.length; i++) {
+        if (!document.getElementById(`essay_${i}`).value.trim()) {
+          alert(`Please write your answer for Boss Question #${i + 1} before submitting!`);
+          document.getElementById(`essay_${i}`).focus();
+          return;
+        }
+      }
+
+      bossSubmitted = true;
+      completedChallenges += essayData.length;
+      essayData.forEach((_, idx) => {
+        document.getElementById(`sample_${idx}`).style.display = "block";
+      });
+
+      document.getElementById("submitBossBtn").disabled = true;
+      document.getElementById("submitBossBtn").style.opacity = "0.6";
+      document.getElementById("victoryCard").style.display = "block";
+      updateHUD();
+      document.getElementById("victoryCard").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function claimEssayXP(idx) {
+      const btn = document.getElementById(`claim_${idx}`);
+      if (btn.disabled) return;
+      btn.disabled = true;
+      btn.textContent = "⭐ +20 XP Claimed!";
+      btn.style.background = "#15803d";
+      btn.style.opacity = "0.75";
+      totalXP += 20;
+      updateHUD();
+    }
+
+    function renderFullAnswerKey() {
+      const letters = ["A", "B", "C", "D"];
+      const k1 = document.getElementById("keyList1");
+      k1.innerHTML = "";
+      mcqData.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${letters[item.ans]}</strong> &ndash; ${item.opts[item.ans]}`;
+        k1.appendChild(li);
+      });
+
+      const k2 = document.getElementById("keyList2");
+      k2.innerHTML = "";
+      blanksData.forEach(item => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${item.ans}</strong>`;
+        k2.appendChild(li);
+      });
+
+      const k3 = document.getElementById("keyList3");
+      k3.innerHTML = "";
+      essayData.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item.sample;
+        k3.appendChild(li);
+      });
+    }
+
+    function toggleFullKey() {
+      const keySection = document.getElementById("fullAnswerKey");
+      keySection.classList.toggle("open");
+      if (keySection.classList.contains("open")) {
+        keySection.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function resetGame() {
+      if (!confirm("Restart the entire Photosynthesis Quest from 0 XP?")) return;
+      totalXP = 0;
+      completedChallenges = 0;
+      activeBlankIndex = 0;
+      l2Checked = false;
+      bossSubmitted = false;
+
+      document.getElementById("checkL2Btn").disabled = false;
+      document.getElementById("checkL2Btn").style.opacity = "1";
+      document.getElementById("submitBossBtn").disabled = false;
+      document.getElementById("submitBossBtn").style.opacity = "1";
+      document.getElementById("victoryCard").style.display = "none";
+
+      renderLevel1();
+      renderLevel2();
+      renderLevel3();
+      updateHUD();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    renderLevel1();
+    renderLevel2();
+    renderLevel3();
+    renderFullAnswerKey();
+    updateHUD();
+  </script>
+</body>
+</html>
